@@ -1,0 +1,75 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1280px; height: 640px; overflow: hidden; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #fff;
+    background:
+      radial-gradient(900px 500px at 88% 10%, rgba(45, 212, 191, .22), transparent 60%),
+      radial-gradient(700px 420px at 0% 100%, rgba(99, 102, 241, .22), transparent 60%),
+      linear-gradient(135deg, #0b1724 0%, #10263a 55%, #0e2233 100%);
+    position: relative;
+  }
+  .grid { position: absolute; inset: 0; opacity: .07;
+    background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px);
+    background-size: 40px 40px; }
+  .wrap { position: absolute; inset: 0; padding: 64px 72px; display: grid; grid-template-columns: 1fr 430px; gap: 40px; }
+  .kicker { font-size: 17px; letter-spacing: .22em; text-transform: uppercase; color: #5eead4; font-weight: 600; }
+  h1 { font-size: 92px; line-height: 1; letter-spacing: -.035em; margin: 18px 0 18px; font-weight: 800; }
+  h1 span { background: linear-gradient(90deg, #5eead4, #a5b4fc); -webkit-background-clip: text; color: transparent; }
+  .tag { font-size: 27px; line-height: 1.35; color: #d6e2ec; max-width: 640px; font-weight: 400; }
+  .tag b { color: #fff; font-weight: 700; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 34px; max-width: 700px; }
+  .chip { font-size: 16px; font-weight: 600; padding: 8px 15px; border-radius: 999px;
+          background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); color: #e6eef5; }
+  .chip.t { border-color: rgba(94,234,212,.5); color: #99f6e4; }
+  .panel { align-self: center; background: rgba(8, 18, 28, .62); border: 1px solid rgba(255,255,255,.14);
+           border-radius: 22px; padding: 26px 26px 22px; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+  .panel h3 { font-size: 14px; letter-spacing: .16em; text-transform: uppercase; color: #94a3b8; margin-bottom: 14px; font-weight: 600; }
+  .row { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 12px;
+         margin-bottom: 9px; font-size: 19px; font-weight: 700; background: rgba(255,255,255,.04); }
+  .row small { font-size: 14px; font-weight: 500; color: #94a3b8; }
+  .row .code { font-family: Consolas, monospace; font-size: 15px; padding: 3px 9px; border-radius: 7px; background: rgba(255,255,255,.08); color: #cbd5e1; }
+  .imp { border-left: 5px solid #34d399; } .reg { border-left: 5px solid #f87171; }
+  .trd { border-left: 5px solid #fbbf24; } .inc { border-left: 5px solid #94a3b8; }
+  .ci { margin-top: 16px; }
+  .ci svg text { font-family: "Segoe UI", Arial, sans-serif; }
+  .foot { position: absolute; left: 72px; bottom: 34px; font-size: 16px; color: #8aa1b4; letter-spacing: .02em; }
+  .foot b { color: #cbd5e1; font-weight: 600; }
+</style></head>
+<body>
+<div class="grid"></div>
+<div class="wrap">
+  <div>
+    <div class="kicker">Evaluation tool · coding-agent harnesses</div>
+    <h1>harness<span>-eval</span></h1>
+    <p class="tag">Did this change to <b>AGENTS.md, skills, MCP, hooks or the model</b> make the agent's code <b>better or worse</b>? Get a verdict you can trust before rollout.</p>
+    <div class="chips">
+      <span class="chip t">Claude Code</span><span class="chip t">Codex</span><span class="chip t">CrewAI + Ollama</span>
+      <span class="chip t">MCP</span><span class="chip">hidden acceptance tests</span><span class="chip">paired bootstrap CI</span>
+      <span class="chip">A/A noise floor</span><span class="chip">isolated runs</span><span class="chip">$0 replay</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Verdict · CI exit code</h3>
+    <div class="row imp">IMPROVEMENT <span class="code">exit 0</span></div>
+    <div class="row reg">REGRESSION <span class="code">exit 1</span></div>
+    <div class="row inc">INCONCLUSIVE <span class="code">exit 2</span></div>
+    <div class="row trd">TRADE-OFF <span class="code">exit 3</span></div>
+    <div class="ci">
+      <svg viewBox="0 0 380 70" width="100%">
+        <rect x="20" y="8" width="150" height="40" rx="4" fill="rgba(251,191,36,.14)"/>
+        <line x1="95" y1="4" x2="95" y2="52" stroke="#94a3b8" stroke-width="1.5"/>
+        <line x1="170" y1="4" x2="170" y2="52" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="4 4"/>
+        <line x1="128" y1="28" x2="300" y2="28" stroke="#5eead4" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="205" cy="28" r="7" fill="#5eead4"/>
+        <text x="95" y="66" font-size="13" fill="#94a3b8" text-anchor="middle">0</text>
+        <text x="170" y="66" font-size="13" fill="#fbbf24" text-anchor="middle">noise floor</text>
+        <text x="300" y="66" font-size="13" fill="#5eead4" text-anchor="middle">95% CI</text>
+      </svg>
+    </div>
+  </div>
+</div>
+<div class="foot"><b>works</b> · <b>business intent</b> · <b>team conventions</b> · <b>cost</b>  —  scored deterministically, compared per task, repeated per trial</div>
+</body></html>

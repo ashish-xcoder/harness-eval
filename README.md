@@ -1,15 +1,47 @@
-# harness-eval
+<div align="center">
 
-**Did this change to our coding-agent harness make the code better or worse?**
+<img src="docs/assets/banner.png" alt="harness-eval: did this harness change make the coding agent's code better or worse?" width="100%">
 
-`harness-eval` runs the same set of real coding tasks with your current harness (baseline) and
-with the changed one (candidate), scores every result on four dimensions, and gives a verdict a
-harness maintainer can act on: `IMPROVEMENT`, `REGRESSION`, `TRADE-OFF` or `INCONCLUSIVE`,
-backed by confidence intervals and an evidence trail down to each agent's diff.
+<br>
 
-A *harness* is everything around the model: `AGENTS.md`/`CLAUDE.md`, skills, MCP servers,
-hooks, settings, the model, the agent CLI itself. In this tool a harness is just a directory,
-so any of those changes is evaluated the same way.
+[![Python 3.12](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)](pyproject.toml)
+[![uv](https://img.shields.io/badge/managed%20with-uv-DE5FE9?logo=astral&logoColor=white)](https://docs.astral.sh/uv/)
+[![tests](https://img.shields.io/badge/tests-18%20passing-2ea44f?logo=pytest&logoColor=white)](tests)
+[![lint](https://img.shields.io/badge/ruff-clean-D7FF64?logo=ruff&logoColor=black)](pyproject.toml)
+<br>
+[![Claude Code](https://img.shields.io/badge/agent-Claude%20Code-D97757?logo=anthropic&logoColor=white)](src/harness_eval/agents.py)
+[![Codex](https://img.shields.io/badge/agent-Codex-412991?logo=openai&logoColor=white)](src/harness_eval/agents.py)
+[![CrewAI + Ollama](https://img.shields.io/badge/agent-CrewAI%20%2B%20Ollama-0f766e)](src/harness_eval/local_agent.py)
+[![MCP](https://img.shields.io/badge/MCP-workspace%20server-13293d)](src/harness_eval/mcp_server.py)
+<br>
+[![demo verdict](https://img.shields.io/badge/demo%20verdict-INCONCLUSIVE-64748b)](examples/orders/results/reports/baseline-vs-candidate/report.md)
+[![demo runs](https://img.shields.io/badge/real%20runs-60%20Claude%20Code-0f766e)](examples/orders/results/runs)
+[![demo cost](https://img.shields.io/badge/demo%20spend-%245.28-b45309)](docs/one-pager.pdf)
+[![replay](https://img.shields.io/badge/re--render-%240-2ea44f)](#quick-start-no-agent-runs-0)
+
+**[Quick start](#quick-start-no-agent-runs-0)** ·
+**[Architecture](#system-architecture)** ·
+**[What it measures](#what-it-measures)** ·
+**[Why you can trust it](#why-you-can-trust-the-verdict)** ·
+**[One-pager (PDF)](docs/one-pager.pdf)** ·
+**[How it was built](process/README.md)**
+
+</div>
+
+---
+
+> **Did this change to our coding-agent harness make the code better or worse?**
+
+`harness-eval` runs the same real coding tasks with your current harness (**baseline**) and the
+changed one (**candidate**), scores every result on four dimensions, and returns a verdict a
+harness maintainer can act on, backed by confidence intervals and an evidence trail down to
+each agent's diff.
+
+| | |
+|---|---|
+| **Harness** | Everything around the model: `AGENTS.md`/`CLAUDE.md`, skills, MCP servers, hooks, settings, the model, the agent CLI. Here it is just a directory, so every kind of change is evaluated the same way. |
+| **Verdict** | `IMPROVEMENT` (exit 0) · `REGRESSION` (1) · `INCONCLUSIVE` (2) · `TRADE-OFF` (3), ready to gate CI. |
+| **Evidence** | Paired per-task deltas, a task+trial bootstrap 95% CI, an A/A noise floor, and a JSON record + diff + redacted log for every run. |
 
 ## Quick start (no agent runs, $0)
 
@@ -28,6 +60,31 @@ Open `examples/orders/results/reports/baseline-vs-candidate/report.html`.
 The committed result is a real run: Claude Code (Haiku), 5 tasks x 6 trials per arm, plus an A/A calibration, $5.28 in total. Verdict: INCONCLUSIVE, explained in the [one-pager](docs/one-pager.pdf).
 
 Exit code: `0` IMPROVEMENT, `1` REGRESSION, `2` INCONCLUSIVE, `3` TRADE-OFF (use it to gate CI).
+
+### The committed demo at a glance
+
+Baseline = bare `AGENTS.md`; candidate = `AGENTS.md` + team conventions. Claude Code on Haiku, 5 tasks × 6 trials per arm.
+
+| Metric | Baseline | Candidate | Δ (95% CI) | Outcome |
+|---|---:|---:|---|---|
+| Works (guardrail) | 1.00 | 1.00 | +0.00 | no change |
+| Business intent (guardrail) | 1.00 | 0.99 | −0.01 [−0.03, 0.00] | no change |
+| Team conventions | 0.84 | **0.90** | +0.06 [0.02, 0.11] | below A/A noise floor (0.067) |
+| Runs with no tests added | 28/30 | **18/30** | | |
+| Cost per task | $0.083 | $0.093 | +$0.010 [−0.001, 0.021] | no change |
+
+**Verdict: INCONCLUSIVE**: a small, probably real convention gain that the tool will not call proven.
+Why I distrusted the 3-trial version of this result and what I did about it: [one-pager](docs/one-pager.pdf).
+
+## System architecture
+
+<p align="center"><img src="docs/assets/architecture.png" alt="harness-eval system architecture: inputs, orchestration, isolated execution, deterministic scoring, verdict" width="100%"></p>
+
+1. **Inputs**: a suite (repo, prompts, hidden tests, convention rules) and two harness directories.
+2. **Orchestrate**: the runner interleaves arms, caches every run by content hash, enforces budget/time caps, and refuses to start if any ancestor directory holds instruction files.
+3. **Execute**: each run gets a fresh workspace and a private home outside the user profile; the agent adapter (Claude Code, Codex, CrewAI + Ollama via the workspace MCP server, or replay) does the task.
+4. **Score**: tamper check, then pristine tests (*works*), hidden tests (*intent*), AST rules (*conventions*) and the agent's own usage (*cost*).
+5. **Decide**: paired deltas, bootstrap CI, A/A noise floor, guardrails, then report + exit code.
 
 ## Run it for real
 
@@ -107,7 +164,7 @@ src/harness_eval/
   mcp_server.py   workspace MCP server (list/read/write files, run tests), jailed to the workspace
 examples/orders/  sample service, 5 tasks with hidden tests, 4 harnesses, committed results
 tests/            pytest; replay agents prove REGRESSION / IMPROVEMENT / TRADE-OFF / A/A for $0
-docs/             one-page write-up
+docs/             one-pager (md + pdf), banner + architecture images (assets/)
 process/          how this was built: AGENTS.md, prompts, session transcript, where the agent was wrong
 ```
 

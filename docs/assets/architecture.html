@@ -1,0 +1,173 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1600px; height: 780px; overflow: hidden; }
+  body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #17202a; background: #f7f9fb; padding: 40px 44px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 26px; }
+  header h1 { font-size: 30px; letter-spacing: -.01em; color: #13293d; }
+  header h1 span { color: #0f766e; }
+  header p { font-size: 15px; color: #5b6573; }
+  .cols { display: grid; grid-template-columns: 250px 34px 270px 34px 340px 34px 280px 34px 250px; align-items: start; }
+  .col { display: flex; flex-direction: column; gap: 12px; }
+  .stage { font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; color: #0f766e; margin-bottom: 2px; }
+  .stage i { font-style: normal; display: inline-flex; width: 22px; height: 22px; border-radius: 50%; background: #0f766e; color: #fff;
+             align-items: center; justify-content: center; font-size: 12px; margin-right: 7px; letter-spacing: 0; }
+  .box { background: #fff; border: 1.5px solid #dfe4ea; border-radius: 12px; padding: 12px 14px; box-shadow: 0 2px 0 rgba(19,41,61,.04); }
+  .box h4 { font-size: 15.5px; color: #13293d; margin-bottom: 4px; }
+  .box p, .box li { font-size: 13px; line-height: 1.42; color: #3d4753; }
+  .box ul { padding-left: 16px; margin: 0; }
+  code { font-family: Consolas, monospace; font-size: 12px; background: #eef2f5; padding: 1px 5px; border-radius: 4px; color: #13293d; }
+  .navy { background: #13293d; border-color: #13293d; }
+  .navy h4 { color: #fff; } .navy p, .navy li { color: #c9d6e2; } .navy code { background: rgba(255,255,255,.12); color: #e6eef5; }
+  .sandbox { border: 2px dashed #0f766e; background: #f0faf8; border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .sandbox > .lbl { font-size: 12.5px; font-weight: 700; color: #0f766e; }
+  .agents { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .agent { border-radius: 9px; padding: 8px 10px; font-size: 12.5px; background: #fff; border: 1.5px solid #cfe9e4; }
+  .agent b { display: block; font-size: 13.5px; color: #13293d; }
+  .trust { background: #fff8eb; border-color: #f2d19b; }
+  .trust h4 { color: #92400e; }
+  .gate { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #92400e; background: #fde7c0;
+          border-radius: 99px; padding: 2px 8px; margin-top: 6px; }
+  .arrow { display: flex; align-items: center; justify-content: center; align-self: stretch; padding-top: 30px; }
+  .arrow svg { width: 34px; height: 30px; }
+  .verdicts { display: grid; gap: 6px; margin-top: 6px; }
+  .v { font-size: 12.5px; font-weight: 700; padding: 5px 9px; border-radius: 7px; display: flex; justify-content: space-between; background: #f3f5f7; }
+  .v.i { border-left: 4px solid #16a34a; } .v.r { border-left: 4px solid #dc2626; } .v.n { border-left: 4px solid #64748b; } .v.t { border-left: 4px solid #d97706; }
+  .v span { font-family: Consolas, monospace; font-weight: 500; color: #5b6573; }
+  .loop { position: absolute; left: 0; right: 0; }
+  footer { margin-top: 26px; display: flex; gap: 22px; font-size: 13px; color: #5b6573; }
+  footer b { color: #13293d; }
+  .key { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; }
+</style></head>
+<body>
+<header>
+  <h1>harness-eval <span>· system architecture</span></h1>
+  <p>one <code>evaluate</code> = tasks × trials × {baseline, candidate}, interleaved, every run cached</p>
+</header>
+
+<div class="cols">
+  <!-- 1 inputs -->
+  <div class="col">
+    <div class="stage"><i>1</i>Inputs</div>
+    <div class="box">
+      <h4>Suite <code>suite.yaml</code></h4>
+      <ul><li>starting repo</li><li>business-request prompts</li><li><b>hidden</b> acceptance tests</li><li>team convention rules</li></ul>
+    </div>
+    <div class="box">
+      <h4>Baseline harness</h4>
+      <p><code>harness.yaml</code> agent · model<br><code>workspace/</code> AGENTS.md, skills, .mcp.json, hooks<br><code>home/</code> user-level config</p>
+    </div>
+    <div class="box">
+      <h4>Candidate harness</h4>
+      <p>same shape, with the change under test</p>
+    </div>
+    <div class="box navy">
+      <h4>CLI</h4>
+      <p><code>evaluate</code> A vs B → report<br><code>calibrate</code> A vs A → noise floor<br><code>--offline</code> re-render, $0</p>
+    </div>
+  </div>
+  <div class="arrow"><svg viewBox="0 0 34 30"><path d="M2 15h24M20 7l9 8-9 8" fill="none" stroke="#0f766e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+  <!-- 2 orchestrate -->
+  <div class="col">
+    <div class="stage"><i>2</i>Orchestrate</div>
+    <div class="box">
+      <h4>Runner</h4>
+      <p>run matrix, arms <b>interleaved</b> (A1 B1 A2 B2…) so provider drift hits both arms equally</p>
+    </div>
+    <div class="box">
+      <h4>Content-addressed cache</h4>
+      <p><code>runs/&lt;harness-hash&gt;/&lt;task&gt;-&lt;hash&gt;/trial-n</code><br>never pays twice · resume after crash · A/A reuses trials</p>
+    </div>
+    <div class="box">
+      <h4>Budget &amp; time caps</h4>
+      <p><code>--max-cost</code> · per-run timeout · max turns · process-tree kill</p>
+    </div>
+    <div class="box trust">
+      <h4>Isolation gate</h4>
+      <p>scan every ancestor dir for CLAUDE.md / AGENTS.md / .claude; refuse to run if found</p>
+      <span class="gate">TRUST CHECK</span>
+    </div>
+  </div>
+  <div class="arrow"><svg viewBox="0 0 34 30"><path d="M2 15h24M20 7l9 8-9 8" fill="none" stroke="#0f766e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+  <!-- 3 execute -->
+  <div class="col">
+    <div class="stage"><i>3</i>Execute · one run</div>
+    <div class="sandbox">
+      <div class="lbl">isolated run dir, outside the user profile</div>
+      <div class="box">
+        <h4>workspace/</h4>
+        <p>fresh repo copy + harness overlay, committed as git baseline</p>
+      </div>
+      <div class="box">
+        <h4>home/ (private)</h4>
+        <p><code>HOME</code> <code>USERPROFILE</code> <code>CLAUDE_CONFIG_DIR</code> <code>CODEX_HOME</code> · login copied in, <b>deleted</b> after the run</p>
+      </div>
+      <div class="agents">
+        <div class="agent"><b>Claude Code</b><code>claude -p</code> stream-json, cost from CLI</div>
+        <div class="agent"><b>Codex</b><code>codex exec --json</code> tokens → price table</div>
+        <div class="agent"><b>CrewAI + Ollama</b>local, free, tools via <b>workspace MCP</b></div>
+        <div class="agent"><b>replay</b>canned patches, deterministic tests</div>
+      </div>
+      <div class="box trust">
+        <h4>Contamination check</h4>
+        <p>Claude <code>init</code> event: unexpected plugins or MCP servers abort the evaluation</p>
+        <span class="gate">TRUST CHECK</span>
+      </div>
+    </div>
+  </div>
+  <div class="arrow"><svg viewBox="0 0 34 30"><path d="M2 15h24M20 7l9 8-9 8" fill="none" stroke="#0f766e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+  <!-- 4 score -->
+  <div class="col">
+    <div class="stage"><i>4</i>Score · deterministic</div>
+    <div class="box trust">
+      <h4>Tamper check</h4>
+      <p>original test functions removed or edited? flag it, then <b>restore pristine tests</b></p>
+      <span class="gate">ANTI-GAMING</span>
+    </div>
+    <div class="box"><h4>Works <small style="color:#dc2626">guardrail</small></h4><p>repo's own tests, empty ini, <code>--noconftest</code></p></div>
+    <div class="box"><h4>Business intent <small style="color:#dc2626">guardrail</small></h4><p>hidden tests copied in <b>after</b> the agent exits</p></div>
+    <div class="box"><h4>Conventions</h4><p>AST rules: Decimal money, domain errors, no print, module logger, type hints, tests added</p></div>
+    <div class="box"><h4>Cost</h4><p>USD · tokens · wall time</p></div>
+    <div class="box"><h4>Evidence record</h4><p>JSON + agent diff + <b>redacted</b> log</p></div>
+  </div>
+  <div class="arrow"><svg viewBox="0 0 34 30"><path d="M2 15h24M20 7l9 8-9 8" fill="none" stroke="#0f766e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+  <!-- 5 decide -->
+  <div class="col">
+    <div class="stage"><i>5</i>Decide</div>
+    <div class="box">
+      <h4>Paired comparison</h4>
+      <p>delta per task (difficulty cancels); failed runs score 0</p>
+    </div>
+    <div class="box">
+      <h4>Bootstrap 95% CI</h4>
+      <p>resample tasks <b>and</b> trials</p>
+    </div>
+    <div class="box trust">
+      <h4>A/A noise floor</h4>
+      <p>from <code>calibrate</code>; a delta must beat it</p>
+      <span class="gate">TRUST CHECK</span>
+    </div>
+    <div class="box navy">
+      <h4>Verdict + report</h4>
+      <div class="verdicts">
+        <div class="v i">IMPROVEMENT <span>0</span></div>
+        <div class="v r">REGRESSION <span>1</span></div>
+        <div class="v n">INCONCLUSIVE <span>2</span></div>
+        <div class="v t">TRADE-OFF <span>3</span></div>
+      </div>
+      <p style="margin-top:8px">report.md · report.html · report.json</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span><span class="key" style="background:#fde7c0"></span><b>trust checks</b>: a failure stops the evaluation instead of producing a wrong verdict</span>
+  <span><span class="key" style="background:#f0faf8;border:1.5px dashed #0f766e"></span><b>isolated sandbox</b> per run</span>
+  <span><b>guardrail</b>: a detected drop forces REGRESSION</span>
+</footer>
+</body></html>
