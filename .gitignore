@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.harness-eval/
+*.egg-info/
+dist/
+# never commit agent credentials
+**/.credentials.json
+**/auth.json

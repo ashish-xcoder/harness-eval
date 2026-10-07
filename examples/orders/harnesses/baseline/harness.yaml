@@ -1,0 +1,5 @@
+# Baseline: today's harness. Claude Code on Haiku, a bare AGENTS.md.
+agent: claude
+model: haiku
+max_turns: 30
+timeout_s: 600

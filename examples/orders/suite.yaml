@@ -1,0 +1,51 @@
+# Evaluation suite: 5 realistic feature requests against a small orders service.
+# Each task: the prompt the agent sees + hidden acceptance tests it never sees.
+name: orders-service
+repo: repo            # starting code, copied fresh for every run
+tests: tests          # the repo's own tests -> "works" (run from a pristine copy)
+source: app           # where team conventions are checked
+conventions:          # see harness_eval/scorers.py for the rule definitions
+  - no-print
+  - domain-errors
+  - decimal-money
+  - type-hints
+  - module-logger
+  - tests-added
+
+tasks:
+  - id: bulk-discount
+    hidden_tests: tasks/bulk_discount_test.py
+    prompt: |
+      Business wants a bulk discount: when a single line item has 10 or more units,
+      that line gets 5% off. Change `line_total` in app/pricing.py accordingly.
+      The discounted line total must be rounded half-up to cents. Lines under 10
+      units keep their current price.
+
+  - id: coupons
+    hidden_tests: tasks/coupons_test.py
+    prompt: |
+      Add coupon support. Implement `apply_coupon(order, code)` in app/pricing.py that
+      returns the order subtotal after the coupon, rounded half-up to cents.
+      Supported codes: "SAVE10" = 10% off the subtotal, "FLAT5" = $5 off the subtotal
+      (never below $0.00). Any other code must be rejected with an error.
+
+  - id: tax
+    hidden_tests: tasks/tax_test.py
+    prompt: |
+      Add sales tax. Implement `tax(order)` in app/pricing.py returning the tax owed on
+      the order subtotal, rounded half-up to cents. Rates by `order.region`:
+      "CA" 7.25%, "NY" 4%, every other region 0%.
+
+  - id: reserve-stock
+    hidden_tests: tasks/reserve_test.py
+    prompt: |
+      Add `Inventory.reserve(items)` in app/inventory.py. It takes a list of LineItem and
+      decrements stock for each SKU. If any SKU is unknown or has insufficient stock,
+      raise an error and leave all stock unchanged (all-or-nothing).
+
+  - id: shipping
+    hidden_tests: tasks/shipping_test.py
+    prompt: |
+      Add shipping pricing. Implement `shipping_cost(order, express=False)` in
+      app/pricing.py. Orders with a subtotal of $50.00 or more ship free, otherwise
+      standard shipping is $5.99. Express shipping adds $10.00 on top, always.

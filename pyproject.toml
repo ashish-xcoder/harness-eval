@@ -1,0 +1,36 @@
+[project]
+name = "harness-eval"
+version = "0.1.0"
+description = "Evaluate whether a change to a coding-agent harness improved the code it produces."
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "typer>=0.12",
+    "pyyaml>=6.0",
+    "pytest>=8.0",
+]
+
+[project.optional-dependencies]
+# Free local agent: CrewAI driving an Ollama model through the workspace MCP server.
+local = [
+    "crewai>=0.100",
+    "crewai-tools[mcp]>=0.40",
+    "mcp>=1.2",
+]
+
+[project.scripts]
+harness-eval = "harness_eval.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/harness_eval"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--ignore=tests/fixtures"
+
+[tool.ruff]
+line-length = 100

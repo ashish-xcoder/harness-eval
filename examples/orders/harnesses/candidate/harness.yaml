@@ -1,0 +1,6 @@
+# Candidate: same agent and model, AGENTS.md now spells out the team conventions
+# and a "run the tests before you finish" rule. This is the change under evaluation.
+agent: claude
+model: haiku
+max_turns: 30
+timeout_s: 600
