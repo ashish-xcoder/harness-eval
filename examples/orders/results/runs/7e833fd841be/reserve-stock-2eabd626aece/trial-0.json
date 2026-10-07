@@ -1,0 +1,103 @@
+{
+  "suite": "orders-service",
+  "harness": "baseline",
+  "harness_hash": "7e833fd841be",
+  "agent_kind": "claude",
+  "model": "haiku",
+  "task": "reserve-stock",
+  "task_hash": "2eabd626aece",
+  "trial": 0,
+  "status": "ok",
+  "agent": {
+    "status": "ok",
+    "duration_s": 41.0,
+    "cost_usd": 0.10599650000000001,
+    "input_tokens": 426292,
+    "output_tokens": 2664,
+    "turns": 12,
+    "message": "Perfect! Added `Inventory.reserve(items)` to app/inventory.py. The method:\n- Takes a list of LineItem objects\n- Validates all SKUs exist and have sufficient stock first (without modifying state)\n- If any SKU is unknown or stock is insufficient, raises an error and leaves all stock unchanged (all-or-nothing)\n- Only decrements stock if all validations pass\n\nI also added a new `InsufficientStock` error class to app/errors.py for this use case. All tests pass.",
+    "error": "",
+    "loaded": {
+      "model": "claude-haiku-4-5-20251001",
+      "mcp_servers": [],
+      "plugins": [],
+      "skills": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator"
+      ],
+      "slash_commands": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ]
+    }
+  },
+  "scores": {
+    "works": 1.0,
+    "works_detail": {
+      "passed": 6,
+      "total": 6,
+      "failed": [],
+      "output": "......                                                                   [100%]\n6 passed in 0.28s\n"
+    },
+    "intent": 1.0,
+    "intent_detail": {
+      "passed": 4,
+      "total": 4,
+      "failed": [],
+      "output": "....                                                                     [100%]\n4 passed in 0.15s\n"
+    },
+    "conventions": 0.8333333333333334,
+    "violations": [
+      {
+        "rule": "tests-added",
+        "file": "",
+        "line": 0,
+        "detail": "no test file added or changed"
+      }
+    ],
+    "tampered": [],
+    "tests_added": [],
+    "files_changed": {
+      "app/errors.py": "M",
+      "app/inventory.py": "M"
+    }
+  },
+  "created": "2026-10-07T13:11:18+00:00"
+}

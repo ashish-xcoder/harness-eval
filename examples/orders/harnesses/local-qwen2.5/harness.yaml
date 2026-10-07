@@ -1,5 +1,5 @@
 # Local, free: CrewAI agent on Ollama qwen2.5:7b, workspace tools via the harness-eval MCP server.
 agent: crewai
-model: ollama/qwen2.5:7b
+model: ollama/qwen2.5-7b-16k
 max_turns: 25
 timeout_s: 900

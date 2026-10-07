@@ -1,0 +1,102 @@
+{
+  "suite": "orders-service",
+  "harness": "candidate",
+  "harness_hash": "682bee5bbfb9",
+  "agent_kind": "claude",
+  "model": "haiku",
+  "task": "bulk-discount",
+  "task_hash": "8231c8d52d44",
+  "trial": 4,
+  "status": "ok",
+  "agent": {
+    "status": "ok",
+    "duration_s": 28.2,
+    "cost_usd": 0.08982160000000002,
+    "input_tokens": 316895,
+    "output_tokens": 1860,
+    "turns": 9,
+    "message": "Done! I've implemented the bulk discount feature in `app/pricing.py:15-19`. The `line_total` function now:\n\n1. Calculates the base total (unit_price \u00d7 quantity)\n2. Applies a 5% discount (multiplies by 0.95) when quantity \u2265 10\n3. Rounds the result to cents using half-up rounding via the existing `to_cents()` function\n\nLines with fewer than 10 units keep their current price. All tests pass.",
+    "error": "",
+    "loaded": {
+      "model": "claude-haiku-4-5-20251001",
+      "mcp_servers": [],
+      "plugins": [],
+      "skills": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator"
+      ],
+      "slash_commands": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ]
+    }
+  },
+  "scores": {
+    "works": 1.0,
+    "works_detail": {
+      "passed": 6,
+      "total": 6,
+      "failed": [],
+      "output": "......                                                                   [100%]\n6 passed in 0.10s\n"
+    },
+    "intent": 1.0,
+    "intent_detail": {
+      "passed": 4,
+      "total": 4,
+      "failed": [],
+      "output": "....                                                                     [100%]\n4 passed in 0.08s\n"
+    },
+    "conventions": 0.8333333333333334,
+    "violations": [
+      {
+        "rule": "tests-added",
+        "file": "",
+        "line": 0,
+        "detail": "no test file added or changed"
+      }
+    ],
+    "tampered": [],
+    "tests_added": [],
+    "files_changed": {
+      "app/pricing.py": "M"
+    }
+  },
+  "created": "2026-10-07T13:28:17+00:00"
+}

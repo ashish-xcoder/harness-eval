@@ -1,0 +1,78 @@
+diff --git a/app/pricing.py b/app/pricing.py
+index ee5f36b..cdc4fb2 100644
+--- a/app/pricing.py
++++ b/app/pricing.py
+@@ -20,3 +20,18 @@ def subtotal(order: Order) -> Decimal:
+     total = sum((line_total(item) for item in order.items), Decimal("0"))
+     logger.debug("subtotal for %d items: %s", len(order.items), total)
+     return to_cents(total)
++
++
++def shipping_cost(order: Order, express: bool = False) -> Decimal:
++    order_subtotal = subtotal(order)
++    STANDARD_SHIPPING = Decimal("5.99")
++    EXPRESS_ADDON = Decimal("10.00")
++    FREE_THRESHOLD = Decimal("50.00")
++
++    if order_subtotal >= FREE_THRESHOLD:
++        base_cost = Decimal("0.00")
++    else:
++        base_cost = STANDARD_SHIPPING
++
++    total_cost = base_cost + (EXPRESS_ADDON if express else Decimal("0.00"))
++    return to_cents(total_cost)
+diff --git a/tests/test_pricing.py b/tests/test_pricing.py
+index cf171c4..aea27e2 100644
+--- a/tests/test_pricing.py
++++ b/tests/test_pricing.py
+@@ -4,7 +4,7 @@ import pytest
+ 
+ from app.errors import InvalidQuantity, OrderError
+ from app.models import LineItem, Order
+-from app.pricing import line_total, subtotal
++from app.pricing import line_total, subtotal, shipping_cost
+ 
+ 
+ def test_line_total_multiplies_price_by_quantity():
+@@ -24,3 +24,41 @@ def test_non_positive_quantity_is_rejected():
+     with pytest.raises(InvalidQuantity):
+         LineItem("A", Decimal("1.00"), 0)
+     assert issubclass(InvalidQuantity, OrderError)
++
++
++def test_standard_shipping_below_threshold():
++    order = Order([LineItem("A", Decimal("10.00"), 1)])
++    assert shipping_cost(order) == Decimal("5.99")
++
++
++def test_free_shipping_at_threshold():
++    order = Order([LineItem("A", Decimal("25.00"), 2)])
++    assert shipping_cost(order) == Decimal("0.00")
++
++
++def test_free_shipping_above_threshold():
++    order = Order([LineItem("A", Decimal("30.00"), 2)])
++    assert shipping_cost(order) == Decimal("0.00")
++
++
++def test_express_shipping_below_threshold():
++    order = Order([LineItem("A", Decimal("10.00"), 1)])
++    assert shipping_cost(order, express=True) == Decimal("15.99")
++
++
++def test_express_shipping_at_threshold():
++    order = Order([LineItem("A", Decimal("25.00"), 2)])
++    assert shipping_cost(order, express=True) == Decimal("10.00")
++
++
++def test_express_shipping_above_threshold():
++    order = Order([LineItem("A", Decimal("30.00"), 2)])
++    assert shipping_cost(order, express=True) == Decimal("10.00")
++
++
++def test_empty_order_shipping():
++    assert shipping_cost(Order()) == Decimal("5.99")
++
++
++def test_empty_order_express_shipping():
++    assert shipping_cost(Order(), express=True) == Decimal("15.99")

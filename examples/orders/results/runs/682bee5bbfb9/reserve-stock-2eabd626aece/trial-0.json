@@ -1,0 +1,103 @@
+{
+  "suite": "orders-service",
+  "harness": "candidate",
+  "harness_hash": "682bee5bbfb9",
+  "agent_kind": "claude",
+  "model": "haiku",
+  "task": "reserve-stock",
+  "task_hash": "2eabd626aece",
+  "trial": 0,
+  "status": "ok",
+  "agent": {
+    "status": "ok",
+    "duration_s": 36.4,
+    "cost_usd": 0.09944820000000001,
+    "input_tokens": 360209,
+    "output_tokens": 2635,
+    "turns": 12,
+    "message": "Done. I've added the `reserve(items)` method to the `Inventory` class with the following features:\n\n- Takes a list of `LineItem` and validates all SKUs exist and have sufficient stock before making any changes (all-or-nothing)\n- Raises `UnknownSku` if any SKU is not in inventory\n- Raises `InsufficientStock` if any SKU has insufficient stock\n- Only decrements stock if all validations pass\n- Added the new `InsufficientStock` error class to `app/errors.py`\n- Has full type hints as required\n\nAll 6 tests pass.",
+    "error": "",
+    "loaded": {
+      "model": "claude-haiku-4-5-20251001",
+      "mcp_servers": [],
+      "plugins": [],
+      "skills": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator"
+      ],
+      "slash_commands": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ]
+    }
+  },
+  "scores": {
+    "works": 1.0,
+    "works_detail": {
+      "passed": 6,
+      "total": 6,
+      "failed": [],
+      "output": "......                                                                   [100%]\n6 passed in 0.08s\n"
+    },
+    "intent": 1.0,
+    "intent_detail": {
+      "passed": 4,
+      "total": 4,
+      "failed": [],
+      "output": "....                                                                     [100%]\n4 passed in 0.08s\n"
+    },
+    "conventions": 0.8333333333333334,
+    "violations": [
+      {
+        "rule": "tests-added",
+        "file": "",
+        "line": 0,
+        "detail": "no test file added or changed"
+      }
+    ],
+    "tampered": [],
+    "tests_added": [],
+    "files_changed": {
+      "app/errors.py": "M",
+      "app/inventory.py": "M"
+    }
+  },
+  "created": "2026-10-07T13:23:20+00:00"
+}

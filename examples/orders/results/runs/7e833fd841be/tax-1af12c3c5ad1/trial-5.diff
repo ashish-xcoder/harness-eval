@@ -1,0 +1,20 @@
+diff --git a/app/pricing.py b/app/pricing.py
+index ee5f36b..e1fa496 100644
+--- a/app/pricing.py
++++ b/app/pricing.py
+@@ -20,3 +20,15 @@ def subtotal(order: Order) -> Decimal:
+     total = sum((line_total(item) for item in order.items), Decimal("0"))
+     logger.debug("subtotal for %d items: %s", len(order.items), total)
+     return to_cents(total)
++
++
++def tax(order: Order) -> Decimal:
++    rate = Decimal("0")
++    if order.region == "CA":
++        rate = Decimal("0.0725")
++    elif order.region == "NY":
++        rate = Decimal("0.04")
++
++    sub = subtotal(order)
++    tax_amount = sub * rate
++    return to_cents(tax_amount)

@@ -1,0 +1,108 @@
+diff --git a/app/errors.py b/app/errors.py
+index 6a9f07a..f1336ac 100644
+--- a/app/errors.py
++++ b/app/errors.py
+@@ -8,3 +8,7 @@ class InvalidQuantity(OrderError):
+ 
+ class UnknownSku(OrderError):
+     """The SKU is not known to the inventory."""
++
++
++class InvalidCoupon(OrderError):
++    """The coupon code is not valid."""
+diff --git a/app/pricing.py b/app/pricing.py
+index ee5f36b..b2861d4 100644
+--- a/app/pricing.py
++++ b/app/pricing.py
+@@ -1,6 +1,7 @@
+ import logging
+ from decimal import ROUND_HALF_UP, Decimal
+ 
++from app.errors import InvalidCoupon
+ from app.models import LineItem, Order
+ 
+ logger = logging.getLogger(__name__)
+@@ -20,3 +21,19 @@ def subtotal(order: Order) -> Decimal:
+     total = sum((line_total(item) for item in order.items), Decimal("0"))
+     logger.debug("subtotal for %d items: %s", len(order.items), total)
+     return to_cents(total)
++
++
++def apply_coupon(order: Order, code: str) -> Decimal:
++    base = subtotal(order)
++
++    if code == "SAVE10":
++        discount = base * Decimal("0.10")
++        result = base - discount
++    elif code == "FLAT5":
++        result = base - Decimal("5.00")
++        result = max(result, Decimal("0.00"))
++    else:
++        raise InvalidCoupon(f"coupon code '{code}' is not valid")
++
++    logger.debug("applied coupon %s to subtotal %s: %s", code, base, result)
++    return to_cents(result)
+diff --git a/tests/test_pricing.py b/tests/test_pricing.py
+index cf171c4..9a08c6d 100644
+--- a/tests/test_pricing.py
++++ b/tests/test_pricing.py
+@@ -2,9 +2,9 @@ from decimal import Decimal
+ 
+ import pytest
+ 
+-from app.errors import InvalidQuantity, OrderError
++from app.errors import InvalidQuantity, InvalidCoupon, OrderError
+ from app.models import LineItem, Order
+-from app.pricing import line_total, subtotal
++from app.pricing import apply_coupon, line_total, subtotal
+ 
+ 
+ def test_line_total_multiplies_price_by_quantity():
+@@ -24,3 +24,47 @@ def test_non_positive_quantity_is_rejected():
+     with pytest.raises(InvalidQuantity):
+         LineItem("A", Decimal("1.00"), 0)
+     assert issubclass(InvalidQuantity, OrderError)
++
++
++def test_save10_coupon_applies_10_percent_discount():
++    order = Order([LineItem("A", Decimal("10.00"), 1)])
++    assert apply_coupon(order, "SAVE10") == Decimal("9.00")
++
++
++def test_save10_coupon_rounds_half_up_to_cents():
++    order = Order([LineItem("A", Decimal("10.00"), 1)])
++    result = apply_coupon(order, "SAVE10")
++    assert result == result.quantize(Decimal("0.01"))
++
++
++def test_save10_coupon_with_rounding():
++    order = Order([LineItem("A", Decimal("9.99"), 1)])
++    assert apply_coupon(order, "SAVE10") == Decimal("8.99")
++
++
++def test_flat5_coupon_applies_five_dollar_discount():
++    order = Order([LineItem("A", Decimal("10.00"), 1)])
++    assert apply_coupon(order, "FLAT5") == Decimal("5.00")
++
++
++def test_flat5_coupon_does_not_go_below_zero():
++    order = Order([LineItem("A", Decimal("3.00"), 1)])
++    assert apply_coupon(order, "FLAT5") == Decimal("0.00")
++
++
++def test_flat5_coupon_with_exact_five():
++    order = Order([LineItem("A", Decimal("5.00"), 1)])
++    assert apply_coupon(order, "FLAT5") == Decimal("0.00")
++
++
++def test_invalid_coupon_code_raises_error():
++    order = Order([LineItem("A", Decimal("10.00"), 1)])
++    with pytest.raises(InvalidCoupon):
++        apply_coupon(order, "INVALID")
++    assert issubclass(InvalidCoupon, OrderError)
++
++
++def test_empty_order_with_coupon():
++    order = Order()
++    assert apply_coupon(order, "SAVE10") == Decimal("0.00")
++    assert apply_coupon(order, "FLAT5") == Decimal("0.00")

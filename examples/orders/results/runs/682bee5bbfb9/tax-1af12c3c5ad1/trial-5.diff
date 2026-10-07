@@ -1,0 +1,60 @@
+diff --git a/app/pricing.py b/app/pricing.py
+index ee5f36b..0485538 100644
+--- a/app/pricing.py
++++ b/app/pricing.py
+@@ -20,3 +20,13 @@ def subtotal(order: Order) -> Decimal:
+     total = sum((line_total(item) for item in order.items), Decimal("0"))
+     logger.debug("subtotal for %d items: %s", len(order.items), total)
+     return to_cents(total)
++
++
++def tax(order: Order) -> Decimal:
++    rates = {
++        "CA": Decimal("0.0725"),
++        "NY": Decimal("0.04"),
++    }
++    rate = rates.get(order.region, Decimal("0"))
++    order_subtotal = subtotal(order)
++    return to_cents(order_subtotal * rate)
+diff --git a/tests/test_pricing.py b/tests/test_pricing.py
+index cf171c4..5acb40c 100644
+--- a/tests/test_pricing.py
++++ b/tests/test_pricing.py
+@@ -4,7 +4,7 @@ import pytest
+ 
+ from app.errors import InvalidQuantity, OrderError
+ from app.models import LineItem, Order
+-from app.pricing import line_total, subtotal
++from app.pricing import line_total, subtotal, tax
+ 
+ 
+ def test_line_total_multiplies_price_by_quantity():
+@@ -24,3 +24,28 @@ def test_non_positive_quantity_is_rejected():
+     with pytest.raises(InvalidQuantity):
+         LineItem("A", Decimal("1.00"), 0)
+     assert issubclass(InvalidQuantity, OrderError)
++
++
++def test_tax_ca_rate():
++    order = Order([LineItem("A", Decimal("100.00"), 1)], region="CA")
++    assert tax(order) == Decimal("7.25")
++
++
++def test_tax_ny_rate():
++    order = Order([LineItem("A", Decimal("100.00"), 1)], region="NY")
++    assert tax(order) == Decimal("4.00")
++
++
++def test_tax_default_region_no_tax():
++    order = Order([LineItem("A", Decimal("100.00"), 1)])
++    assert tax(order) == Decimal("0.00")
++
++
++def test_tax_empty_order():
++    order = Order(region="CA")
++    assert tax(order) == Decimal("0.00")
++
++
++def test_tax_rounds_half_up():
++    order = Order([LineItem("A", Decimal("10.00"), 1)], region="CA")
++    assert tax(order) == Decimal("0.73")

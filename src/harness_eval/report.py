@@ -10,6 +10,7 @@ from __future__ import annotations
 import difflib
 import html
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -139,7 +140,7 @@ def _violation_rows(suite: Suite, runs_a: list[dict], runs_b: list[dict]) -> lis
 
 def _trust_rows(suite, a, runs_a, runs_b, trials, calibration, missing, labels) -> list[list[str]]:
     rows = []
-    for label, runs in zip(labels, (runs_a, runs_b)):
+    for label, runs in zip(labels, (runs_a, runs_b), strict=True):
         st = Counter(r["status"] for r in runs)
         rows.append([f"run status ({label})", ", ".join(f"{k}: {v}" for k, v in sorted(st.items()))
                      + (" - failed runs score 0 quality, they are not dropped" if len(st) > 1 else "")])
@@ -255,7 +256,6 @@ def to_html(blocks: list[tuple], title: str) -> str:
 
 def _inline(text: str) -> str:
     """Escape, then render the two bits of Markdown we emit: `code` and [text](link)."""
-    import re
 
     s = html.escape(text)
     s = re.sub(r"`([^`]+)`", r"<code>\1</code>", s)

@@ -1,0 +1,103 @@
+{
+  "suite": "orders-service",
+  "harness": "baseline",
+  "harness_hash": "7e833fd841be",
+  "agent_kind": "claude",
+  "model": "haiku",
+  "task": "coupons",
+  "task_hash": "cc47a6a3c067",
+  "trial": 5,
+  "status": "ok",
+  "agent": {
+    "status": "ok",
+    "duration_s": 41.6,
+    "cost_usd": 0.1058366,
+    "input_tokens": 393939,
+    "output_tokens": 3113,
+    "turns": 11,
+    "message": "Perfect! The implementation is complete and working correctly. I've added:\n\n1. **`InvalidCoupon` error class** in `app/errors.py` for handling invalid coupon codes\n2. **`apply_coupon(order, code)` function** in `app/pricing.py` that:\n   - Supports \"SAVE10\" (10% off subtotal) and \"FLAT5\" ($5 off subtotal)\n   - Returns the discounted amount rounded half-up to cents\n   - Ensures the result never goes below $0.00\n   - Raises `InvalidCoupon` for any unsupported code\n\nAll tests pass, and manual verification confirms it handles edge cases correctly including proper rounding and amount floors.",
+    "error": "",
+    "loaded": {
+      "model": "claude-haiku-4-5-20251001",
+      "mcp_servers": [],
+      "plugins": [],
+      "skills": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator"
+      ],
+      "slash_commands": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ]
+    }
+  },
+  "scores": {
+    "works": 1.0,
+    "works_detail": {
+      "passed": 6,
+      "total": 6,
+      "failed": [],
+      "output": "......                                                                   [100%]\n6 passed in 0.15s\n"
+    },
+    "intent": 1.0,
+    "intent_detail": {
+      "passed": 5,
+      "total": 5,
+      "failed": [],
+      "output": ".....                                                                    [100%]\n5 passed in 0.12s\n"
+    },
+    "conventions": 0.8333333333333334,
+    "violations": [
+      {
+        "rule": "tests-added",
+        "file": "",
+        "line": 0,
+        "detail": "no test file added or changed"
+      }
+    ],
+    "tampered": [],
+    "tests_added": [],
+    "files_changed": {
+      "app/errors.py": "M",
+      "app/pricing.py": "M"
+    }
+  },
+  "created": "2026-10-07T13:08:01+00:00"
+}

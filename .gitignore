@@ -8,3 +8,5 @@ dist/
 # never commit agent credentials
 **/.credentials.json
 **/auth.json
+.harness-eval-*.log
+.venv-local/

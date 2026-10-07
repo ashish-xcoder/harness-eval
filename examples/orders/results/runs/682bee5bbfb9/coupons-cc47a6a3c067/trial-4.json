@@ -1,0 +1,99 @@
+{
+  "suite": "orders-service",
+  "harness": "candidate",
+  "harness_hash": "682bee5bbfb9",
+  "agent_kind": "claude",
+  "model": "haiku",
+  "task": "coupons",
+  "task_hash": "cc47a6a3c067",
+  "trial": 4,
+  "status": "ok",
+  "agent": {
+    "status": "ok",
+    "duration_s": 58.8,
+    "cost_usd": 0.13565599999999997,
+    "input_tokens": 573631,
+    "output_tokens": 4487,
+    "turns": 18,
+    "message": "Perfect! I've successfully implemented coupon support. Here's what was added:\n\n## Summary\n\n**New error class** (`app/errors.py`):\n- `InvalidCoupon` \u2014 raised when an unknown coupon code is provided\n\n**New function** (`app/pricing.py`):\n- `apply_coupon(order: Order, code: str) -> Decimal` \u2014 applies a coupon to an order and returns the discounted subtotal\n  - \"SAVE10\": 10% off the subtotal\n  - \"FLAT5\": $5 off the subtotal (never below $0.00)\n  - Other codes raise `InvalidCoupon` error\n  - Returns result rounded half-up to cents\n\n**Tests** (`tests/test_pricing.py`):\n- 7 comprehensive tests covering:\n  - SAVE10 discount (simple and complex orders)\n  - FLAT5 discount with floor at $0.00\n  - Invalid coupon rejection\n  - Empty order handling\n\nAll 12 tests pass. The implementation follows team conventions: uses `Decimal` for money, proper error hierarchy, module logging, full type hints, and comprehensive tests.",
+    "error": "",
+    "loaded": {
+      "model": "claude-haiku-4-5-20251001",
+      "mcp_servers": [],
+      "plugins": [],
+      "skills": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator"
+      ],
+      "slash_commands": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ]
+    }
+  },
+  "scores": {
+    "works": 1.0,
+    "works_detail": {
+      "passed": 6,
+      "total": 6,
+      "failed": [],
+      "output": "......                                                                   [100%]\n6 passed in 0.14s\n"
+    },
+    "intent": 1.0,
+    "intent_detail": {
+      "passed": 5,
+      "total": 5,
+      "failed": [],
+      "output": ".....                                                                    [100%]\n5 passed in 0.14s\n"
+    },
+    "conventions": 1.0,
+    "violations": [],
+    "tampered": [],
+    "tests_added": [
+      "tests/test_pricing.py"
+    ],
+    "files_changed": {
+      "app/errors.py": "M",
+      "app/pricing.py": "M",
+      "tests/test_pricing.py": "M"
+    }
+  },
+  "created": "2026-10-07T13:30:35+00:00"
+}

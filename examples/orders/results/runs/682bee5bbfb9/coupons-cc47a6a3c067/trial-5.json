@@ -1,0 +1,99 @@
+{
+  "suite": "orders-service",
+  "harness": "candidate",
+  "harness_hash": "682bee5bbfb9",
+  "agent_kind": "claude",
+  "model": "haiku",
+  "task": "coupons",
+  "task_hash": "cc47a6a3c067",
+  "trial": 5,
+  "status": "ok",
+  "agent": {
+    "status": "ok",
+    "duration_s": 49.7,
+    "cost_usd": 0.1135469,
+    "input_tokens": 409611,
+    "output_tokens": 3829,
+    "turns": 14,
+    "message": "Done! I've successfully implemented coupon support with the following changes:\n\n**New error class** (`app/errors.py`):\n- `InvalidCoupon` \u2014 raised for invalid coupon codes\n\n**New function** (`app/pricing.py`):\n- `apply_coupon(order, code) -> Decimal` \u2014 applies a coupon code to an order's subtotal\n  - **SAVE10**: 10% discount (multiply by 0.90)\n  - **FLAT5**: $5 discount (never below $0.00)\n  - Other codes raise `InvalidCoupon`\n  - Returns the discounted amount rounded half-up to cents\n\n**Tests** (8 new test cases covering):\n- Both coupon types with various amounts\n- Floor behavior for FLAT5 (never negative)\n- Invalid coupon rejection\n- Rounding precision\n- Empty orders\n\nAll 13 tests pass. The implementation follows team conventions: uses `Decimal` for all money, raises `OrderError` subclasses, includes full type hints, and has proper logging.",
+    "error": "",
+    "loaded": {
+      "model": "claude-haiku-4-5-20251001",
+      "mcp_servers": [],
+      "plugins": [],
+      "skills": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator"
+      ],
+      "slash_commands": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ]
+    }
+  },
+  "scores": {
+    "works": 1.0,
+    "works_detail": {
+      "passed": 6,
+      "total": 6,
+      "failed": [],
+      "output": "......                                                                   [100%]\n6 passed in 0.13s\n"
+    },
+    "intent": 1.0,
+    "intent_detail": {
+      "passed": 5,
+      "total": 5,
+      "failed": [],
+      "output": ".....                                                                    [100%]\n5 passed in 0.14s\n"
+    },
+    "conventions": 1.0,
+    "violations": [],
+    "tampered": [],
+    "tests_added": [
+      "tests/test_pricing.py"
+    ],
+    "files_changed": {
+      "app/errors.py": "M",
+      "app/pricing.py": "M",
+      "tests/test_pricing.py": "M"
+    }
+  },
+  "created": "2026-10-07T13:31:27+00:00"
+}

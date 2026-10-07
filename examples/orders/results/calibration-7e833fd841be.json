@@ -1,0 +1,15 @@
+{
+  "harness": "baseline",
+  "harness_hash": "7e833fd841be",
+  "verdict": "INCONCLUSIVE",
+  "tasks": 5,
+  "trials": 3,
+  "noise": {
+    "works": 0.0,
+    "intent": 0.0,
+    "conventions": 0.0666666666666667,
+    "cost_usd": 0.021243693333333324,
+    "tokens": 116940.6,
+    "duration_s": 14.313333333333333
+  }
+}

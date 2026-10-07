@@ -1,0 +1,103 @@
+{
+  "suite": "orders-service",
+  "harness": "baseline",
+  "harness_hash": "7e833fd841be",
+  "agent_kind": "claude",
+  "model": "haiku",
+  "task": "reserve-stock",
+  "task_hash": "2eabd626aece",
+  "trial": 3,
+  "status": "ok",
+  "agent": {
+    "status": "ok",
+    "duration_s": 34.6,
+    "cost_usd": 0.0940829,
+    "input_tokens": 350055,
+    "output_tokens": 2092,
+    "turns": 10,
+    "message": "Done! I've added the `Inventory.reserve(items)` method with all-or-nothing semantics:\n\n- **Validation phase**: Checks that all SKUs exist and have sufficient stock\n- **Update phase**: Only decrements stock if all validations pass\n- **Errors**: Raises `UnknownSku` for missing SKUs or `InsufficientStock` for insufficient quantity, without modifying stock\n\nAll tests pass.",
+    "error": "",
+    "loaded": {
+      "model": "claude-haiku-4-5-20251001",
+      "mcp_servers": [],
+      "plugins": [],
+      "skills": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator"
+      ],
+      "slash_commands": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ]
+    }
+  },
+  "scores": {
+    "works": 1.0,
+    "works_detail": {
+      "passed": 6,
+      "total": 6,
+      "failed": [],
+      "output": "......                                                                   [100%]\n6 passed in 0.31s\n"
+    },
+    "intent": 1.0,
+    "intent_detail": {
+      "passed": 4,
+      "total": 4,
+      "failed": [],
+      "output": "....                                                                     [100%]\n4 passed in 0.14s\n"
+    },
+    "conventions": 0.8333333333333334,
+    "violations": [
+      {
+        "rule": "tests-added",
+        "file": "",
+        "line": 0,
+        "detail": "no test file added or changed"
+      }
+    ],
+    "tampered": [],
+    "tests_added": [],
+    "files_changed": {
+      "app/errors.py": "M",
+      "app/inventory.py": "M"
+    }
+  },
+  "created": "2026-10-07T13:11:56+00:00"
+}

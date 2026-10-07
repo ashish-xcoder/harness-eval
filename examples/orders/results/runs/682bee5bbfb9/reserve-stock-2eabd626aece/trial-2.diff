@@ -1,0 +1,102 @@
+diff --git a/app/errors.py b/app/errors.py
+index 6a9f07a..c603c32 100644
+--- a/app/errors.py
++++ b/app/errors.py
+@@ -8,3 +8,7 @@ class InvalidQuantity(OrderError):
+ 
+ class UnknownSku(OrderError):
+     """The SKU is not known to the inventory."""
++
++
++class InsufficientStock(OrderError):
++    """There is not enough stock to fulfill the request."""
+diff --git a/app/inventory.py b/app/inventory.py
+index 8304a50..aeb00dc 100644
+--- a/app/inventory.py
++++ b/app/inventory.py
+@@ -1,6 +1,7 @@
+ import logging
+ 
+-from app.errors import UnknownSku
++from app.errors import InsufficientStock, UnknownSku
++from app.models import LineItem
+ 
+ logger = logging.getLogger(__name__)
+ 
+@@ -13,3 +14,17 @@ class Inventory:
+         if sku not in self._stock:
+             raise UnknownSku(sku)
+         return self._stock[sku]
++
++    def reserve(self, items: list[LineItem]) -> None:
++        needed = {}
++        for item in items:
++            if item.sku not in self._stock:
++                raise UnknownSku(item.sku)
++            needed[item.sku] = needed.get(item.sku, 0) + item.quantity
++
++        for sku, quantity in needed.items():
++            if self._stock[sku] < quantity:
++                raise InsufficientStock(f"insufficient stock for {sku}")
++
++        for sku, quantity in needed.items():
++            self._stock[sku] -= quantity
+diff --git a/tests/test_inventory.py b/tests/test_inventory.py
+index 7d7a1be..dabdc6e 100644
+--- a/tests/test_inventory.py
++++ b/tests/test_inventory.py
+@@ -1,7 +1,9 @@
+ import pytest
++from decimal import Decimal
+ 
+-from app.errors import UnknownSku
++from app.errors import InsufficientStock, UnknownSku
+ from app.inventory import Inventory
++from app.models import LineItem
+ 
+ 
+ def test_available_returns_stock():
+@@ -11,3 +13,43 @@ def test_available_returns_stock():
+ def test_unknown_sku_raises():
+     with pytest.raises(UnknownSku):
+         Inventory({}).available("missing")
++
++
++def test_reserve_successful():
++    inv = Inventory({"A": 10, "B": 5})
++    items = [LineItem("A", Decimal("10"), 3), LineItem("B", Decimal("20"), 2)]
++    inv.reserve(items)
++    assert inv.available("A") == 7
++    assert inv.available("B") == 3
++
++
++def test_reserve_unknown_sku():
++    inv = Inventory({"A": 10})
++    items = [LineItem("A", Decimal("10"), 3), LineItem("Z", Decimal("20"), 1)]
++    with pytest.raises(UnknownSku):
++        inv.reserve(items)
++    assert inv.available("A") == 10
++
++
++def test_reserve_insufficient_stock():
++    inv = Inventory({"A": 5})
++    items = [LineItem("A", Decimal("10"), 10)]
++    with pytest.raises(InsufficientStock):
++        inv.reserve(items)
++    assert inv.available("A") == 5
++
++
++def test_reserve_all_or_nothing():
++    inv = Inventory({"A": 5, "B": 10})
++    items = [LineItem("A", Decimal("10"), 2), LineItem("B", Decimal("20"), 15)]
++    with pytest.raises(InsufficientStock):
++        inv.reserve(items)
++    assert inv.available("A") == 5
++    assert inv.available("B") == 10
++
++
++def test_reserve_multiple_items_same_sku():
++    inv = Inventory({"A": 10})
++    items = [LineItem("A", Decimal("10"), 3), LineItem("A", Decimal("10"), 2)]
++    inv.reserve(items)
++    assert inv.available("A") == 5

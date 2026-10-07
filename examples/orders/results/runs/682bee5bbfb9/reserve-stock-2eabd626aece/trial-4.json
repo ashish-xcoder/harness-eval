@@ -1,0 +1,103 @@
+{
+  "suite": "orders-service",
+  "harness": "candidate",
+  "harness_hash": "682bee5bbfb9",
+  "agent_kind": "claude",
+  "model": "haiku",
+  "task": "reserve-stock",
+  "task_hash": "2eabd626aece",
+  "trial": 4,
+  "status": "ok",
+  "agent": {
+    "status": "ok",
+    "duration_s": 27.2,
+    "cost_usd": 0.0779615,
+    "input_tokens": 200290,
+    "output_tokens": 1971,
+    "turns": 9,
+    "message": "Perfect! The implementation is complete and all tests pass. Here's what I added:\n\n**In `app/errors.py`:**\n- New `InsufficientStock` error class for when a SKU doesn't have enough stock\n\n**In `app/inventory.py`:**\n- New `reserve(items)` method that:\n  1. First validates all SKUs are known and have sufficient stock\n  2. If all checks pass, decrements stock for each item\n  3. If any check fails, raises an error and leaves stock completely unchanged (all-or-nothing semantics)\n\nThe method follows the team conventions: using custom `OrderError` subclasses, proper type hints, and logging via the module logger.",
+    "error": "",
+    "loaded": {
+      "model": "claude-haiku-4-5-20251001",
+      "mcp_servers": [],
+      "plugins": [],
+      "skills": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator"
+      ],
+      "slash_commands": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ]
+    }
+  },
+  "scores": {
+    "works": 1.0,
+    "works_detail": {
+      "passed": 6,
+      "total": 6,
+      "failed": [],
+      "output": "......                                                                   [100%]\n6 passed in 0.07s\n"
+    },
+    "intent": 1.0,
+    "intent_detail": {
+      "passed": 4,
+      "total": 4,
+      "failed": [],
+      "output": "....                                                                     [100%]\n4 passed in 0.07s\n"
+    },
+    "conventions": 0.8333333333333334,
+    "violations": [
+      {
+        "rule": "tests-added",
+        "file": "",
+        "line": 0,
+        "detail": "no test file added or changed"
+      }
+    ],
+    "tampered": [],
+    "tests_added": [],
+    "files_changed": {
+      "app/errors.py": "M",
+      "app/inventory.py": "M"
+    }
+  },
+  "created": "2026-10-07T13:34:13+00:00"
+}

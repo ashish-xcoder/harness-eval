@@ -1,0 +1,16 @@
+diff --git a/app/pricing.py b/app/pricing.py
+index ee5f36b..610acbb 100644
+--- a/app/pricing.py
++++ b/app/pricing.py
+@@ -13,7 +13,10 @@ def to_cents(amount: Decimal) -> Decimal:
+ 
+ 
+ def line_total(item: LineItem) -> Decimal:
+-    return to_cents(item.unit_price * item.quantity)
++    total = item.unit_price * item.quantity
++    if item.quantity >= 10:
++        total = total * Decimal("0.95")
++    return to_cents(total)
+ 
+ 
+ def subtotal(order: Order) -> Decimal:

@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>harness-eval: one page</title>
+<style>
+  @page { size: A4; margin: 0; }
+  :root {
+    --ink: #17202a; --muted: #5b6573; --line: #e3e6ea; --paper: #ffffff;
+    --accent: #0f766e; --accent-soft: #e6f4f2; --amber: #b45309; --amber-soft: #fdf3e6;
+    --red: #b91c1c; --navy: #13293d;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 8.55pt/1.42 "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; padding: 0 0 8mm; display: flex; flex-direction: column; overflow: hidden; }
+
+  header { background: var(--navy); color: #fff; padding: 7.5mm 12mm 6mm; position: relative; }
+  header .kicker { font-size: 7.4pt; letter-spacing: .14em; text-transform: uppercase; color: #8fd3c9; font-weight: 600; }
+  header h1 { margin: 1.2mm 0 1.4mm; font-size: 21pt; line-height: 1.05; font-weight: 700; letter-spacing: -.01em; }
+  header h1 span { color: #8fd3c9; }
+  header p { margin: 0; font-size: 9.6pt; color: #d5dde6; max-width: 150mm; }
+  .stats { display: flex; gap: 2.2mm; margin-top: 3.6mm; flex-wrap: wrap; }
+  .stat { background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.16); border-radius: 2mm;
+          padding: 1.3mm 2.6mm; font-size: 7.6pt; color: #e8eef3; }
+  .stat b { color: #fff; font-size: 9pt; margin-right: 1mm; }
+
+  main { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; padding: 5mm 12mm 0; flex: 1; }
+  h2 { font-size: 8.4pt; text-transform: uppercase; letter-spacing: .1em; color: var(--accent);
+       margin: 0 0 2mm; padding-bottom: 1.2mm; border-bottom: 1.5px solid var(--accent-soft); font-weight: 700; }
+  section + section { margin-top: 4mm; }
+
+  .concepts { display: grid; gap: 1.6mm; }
+  .concept { display: grid; grid-template-columns: 24mm 1fr; gap: 2mm; }
+  .concept dt { font-weight: 700; color: var(--navy); }
+  .concept dd { margin: 0; color: #2e3946; }
+
+  ol.decisions { list-style: none; padding: 0; margin: 0; counter-reset: d; display: grid; gap: 2mm; }
+  ol.decisions li { counter-increment: d; position: relative; padding-left: 7.5mm; color: #2e3946; }
+  ol.decisions li::before { content: counter(d); position: absolute; left: 0; top: .2mm; width: 5mm; height: 5mm;
+       border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 7.4pt;
+       display: flex; align-items: center; justify-content: center; }
+  ol.decisions b { color: var(--navy); }
+
+  .card { border: 1px solid var(--line); border-radius: 2.5mm; padding: 3.2mm 3.6mm; background: #fbfcfc; }
+  .verdict-row { display: flex; gap: 2mm; align-items: center; margin-bottom: 2mm; flex-wrap: wrap; }
+  .pill { font-size: 7.2pt; font-weight: 700; letter-spacing: .06em; border-radius: 99px; padding: .7mm 2.6mm; }
+  .pill.inc { background: var(--amber-soft); color: var(--amber); border: 1px solid #f3d3a8; }
+  .pill.gray { background: #eef1f4; color: var(--muted); }
+  .card p { margin: 0 0 1.8mm; color: #2e3946; }
+  .card p:last-child { margin-bottom: 0; }
+  .callout { border-left: 2.5px solid var(--accent); background: var(--accent-soft); padding: 2mm 2.8mm;
+             border-radius: 0 1.5mm 1.5mm 0; margin: 2mm 0; color: #134e48; }
+  .callout.warn { border-color: var(--amber); background: var(--amber-soft); color: #7a3e06; }
+
+  table.mini { width: 100%; border-collapse: collapse; font-size: 7.7pt; margin: 1.5mm 0 2mm; }
+  table.mini th, table.mini td { padding: 1mm 1.4mm; border-bottom: 1px solid var(--line); text-align: left; }
+  table.mini th { color: var(--muted); font-weight: 600; }
+  table.mini td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .up { color: var(--accent); font-weight: 700; }
+
+  .cuts { display: flex; flex-wrap: wrap; gap: 1.4mm; }
+  .cut { background: #f1f3f5; border-radius: 1.4mm; padding: .9mm 2.2mm; font-size: 7.5pt; color: #39424d; }
+  .cut b { color: var(--navy); }
+
+  footer { padding: 0 12mm; display: flex; justify-content: space-between; font-size: 7pt; color: var(--muted);
+           border-top: 1px solid var(--line); margin: 3mm 12mm 0; padding: 2mm 0 0; }
+  code { font-family: Consolas, "SFMono-Regular", monospace; font-size: 7.6pt; background: #eef1f4; padding: 0 .8mm; border-radius: .8mm; }
+  svg text { font-family: "Segoe UI", Arial, sans-serif; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="kicker">Take-home · evaluation tool for coding-agent harnesses</div>
+    <h1>harness-eval <span>·</span> one page</h1>
+    <p>Answers one question before a harness change reaches every engineer: <b style="color:#fff">is the coding agent
+      producing better code after this change?</b> Evidence first: repeated paired runs, hidden tests, and a verdict that is allowed to say "not proven".</p>
+    <div class="stats">
+      <div class="stat"><b>5</b>real tasks</div>
+      <div class="stat"><b>60</b>Claude Code runs</div>
+      <div class="stat"><b>$5.28</b>total spend</div>
+      <div class="stat"><b>4</b>agents: Claude · Codex · CrewAI/Ollama · replay</div>
+      <div class="stat"><b>18</b>pipeline tests, $0</div>
+    </div>
+  </header>
+
+  <main>
+    <div>
+      <section>
+        <h2>Concepts I defined, and why</h2>
+        <dl class="concepts">
+          <div class="concept"><dt>Harness</dt><dd>A directory: <code>harness.yaml</code> + files overlaid on the repo + the agent's private home. One shape for AGENTS.md, skills, MCP, hooks, model or agent swaps.</dd></div>
+          <div class="concept"><dt>Suite</dt><dd>Real business requests + <b>hidden acceptance tests</b>, injected only after the agent exits.</dd></div>
+          <div class="concept"><dt>4 dimensions</dt><dd><b>Works</b> and <b>intent</b> are guardrails that can veto a change. <b>Conventions</b> (AST rules from AGENTS.md) and <b>cost</b> (USD, tokens, time) cannot.</dd></div>
+          <div class="concept"><dt>Paired delta</dt><dd>Unit = task, so difficulty cancels. A bootstrap over tasks <i>and</i> trials gives a 95% CI.</dd></div>
+          <div class="concept"><dt>Noise floor</dt><dd><code>calibrate</code> = baseline vs itself (A/A). It must say INCONCLUSIVE; its spread is the bar real effects must clear.</dd></div>
+          <div class="concept"><dt>Verdict</dt><dd>IMPROVEMENT 0 · REGRESSION 1 · INCONCLUSIVE 2 · TRADE-OFF 3. Exit codes gate CI; TRADE-OFF means no invented weights.</dd></div>
+        </dl>
+      </section>
+
+      <section>
+        <h2>The five hardest decisions</h2>
+        <ol class="decisions">
+          <li><b>No LLM judge.</b> Tests and AST rules only. A judge covers more but reintroduces "an opinion formed by reading outputs", the thing the brief wants replaced.</li>
+          <li><b>Failed runs score zero.</b> Timeouts and crashes are harness behaviour; dropping them flatters a flaky harness.</li>
+          <li><b>Guardrails veto, no weighted score.</b> Any detected drop in works or intent = REGRESSION; mixed results go to a human.</li>
+          <li><b>Isolation from my own harness.</b> A hand check caught my global <code>CLAUDE.md</code> leaking in through parent-directory lookup. Now: runs outside the profile, private HOME/config, ancestor scan, per-run plugin/MCP check.</li>
+          <li><b>A/A floor on top of the CI.</b> Deliberately conservative: a false "ship it" reaches every engineer, a missed gain costs one more run.</li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>What I cut, and why</h2>
+        <div class="cuts">
+          <span class="cut"><b>LLM judge</b>: opinion, not evidence</span>
+          <span class="cut"><b>Parallel runs</b>: 1 GPU, rate limits; arms interleaved</span>
+          <span class="cut"><b>Full Codex demo</b>: adapter + isolation spike only, budget</span>
+          <span class="cut"><b>Non-Python rules</b>: one stack done well</span>
+          <span class="cut"><b>Tasks mined from real PRs</b>: 5 hand-written</span>
+          <span class="cut"><b>Power analysis</b>: "how many trials?"</span>
+          <span class="cut"><b>History dashboards</b></span>
+        </div>
+      </section>
+    </div>
+
+    <div>
+      <section>
+        <h2>One result I did not trust</h2>
+        <div class="card">
+          <div class="verdict-row">
+            <span class="pill inc">INCONCLUSIVE</span>
+            <span class="pill gray">baseline: bare AGENTS.md → candidate: + team conventions</span>
+          </div>
+          <p>Claude Code on Haiku, 5 tasks × 3 trials. The tool said <b>not proven</b>, but the evidence underneath was not empty:</p>
+          <table class="mini">
+            <tr><th>signal (per run)</th><th class="num">baseline</th><th class="num">candidate</th></tr>
+            <tr><td>Team conventions score</td><td class="num">0.84</td><td class="num up">0.90</td></tr>
+            <tr><td>Runs that added no tests</td><td class="num">28 / 30</td><td class="num up">18 / 30</td></tr>
+            <tr><td>Raised a built-in exception</td><td class="num">1 / 30</td><td class="num up">0 / 30</td></tr>
+            <tr><td>Cost per task</td><td class="num">$0.083</td><td class="num">$0.093</td></tr>
+          </table>
+          <p>The 3-trial verdict came down to a <b>tie with the noise floor</b> (+0.067 vs 0.067).</p>
+
+          <svg viewBox="0 0 300 92" width="100%" role="img" aria-label="Confidence intervals for the conventions delta at 3 and 6 trials against the A/A noise floor">
+            <rect x="0" y="0" width="300" height="92" fill="#ffffff"/>
+            <!-- scale: delta -0.04..0.16 -> x 70..290 ; 1 unit = 1100px -->
+            <rect x="70" y="12" width="118" height="56" fill="#fdf3e6"/>
+            <text x="129" y="9" font-size="6.6" fill="#b45309" text-anchor="middle">A/A noise floor ±0.067</text>
+            <line x1="114" y1="10" x2="114" y2="70" stroke="#5b6573" stroke-width="1"/>
+            <text x="114" y="80" font-size="6.6" fill="#5b6573" text-anchor="middle">0</text>
+            <line x1="188" y1="12" x2="188" y2="70" stroke="#b45309" stroke-width="1" stroke-dasharray="2 2"/>
+            <text x="188" y="80" font-size="6.6" fill="#b45309" text-anchor="middle">+0.067</text>
+            <text x="279" y="80" font-size="6.6" fill="#5b6573" text-anchor="middle">+0.15</text>
+            <text x="4" y="31" font-size="7" fill="#17202a">3 trials</text>
+            <line x1="125" y1="28" x2="257" y2="28" stroke="#0f766e" stroke-width="2.2"/>
+            <circle cx="188" cy="28" r="3.2" fill="#0f766e"/>
+            <text x="4" y="55" font-size="7" fill="#17202a">6 trials</text>
+            <line x1="136" y1="52" x2="235" y2="52" stroke="#0f766e" stroke-width="2.2"/>
+            <circle cx="180" cy="52" r="3.2" fill="#0f766e"/>
+            <text x="70" y="90" font-size="6.4" fill="#5b6573">conventions delta (candidate - baseline), dot = estimate, bar = 95% CI</text>
+          </svg>
+
+          <div class="callout"><b>What I did:</b> I did <u>not</u> relax the rule after seeing the data; that is how a tool learns to say what you want. I bought more data instead. Calibration had already cached baseline trials 3–5, so 6 trials cost 15 runs ($1.39).</div>
+          <p><b>At 6 trials: still INCONCLUSIVE.</b> +0.06, CI [0.02, 0.11]: real but small, under the floor. The new "add tests" rule is obeyed only 40% of the time; cost +12% (not significant). The only hidden-test failure in 60 runs was a candidate run (coupon rounding).</p>
+          <p><b>My call:</b> don't roll it out on this evidence. Make the tests rule enforceable (a pytest hook), then re-run.</p>
+          <div class="callout warn"><b>Also distrusted:</b> the baseline passed <i>every</i> hidden test (intent 1.00, floor 0). This suite cannot catch a small hit to correctness. The next investment is harder tasks, not more statistics.</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <span>Reproduce for $0: <code>uv run harness-eval evaluate examples/orders … --offline</code></span>
+    <span>Details: README.md · docs/ · process/</span>
+  </footer>
+</div>
+</body>
+</html>

@@ -97,7 +97,7 @@ def _load(suite_path, a_path, b_path):
         return load_suite(suite_path), load_harness(a_path), load_harness(b_path)
     except ConfigError as e:
         typer.secho(f"config error: {e}", fg=typer.colors.RED, err=True)
-        raise typer.Exit(64)
+        raise typer.Exit(64) from None
 
 
 def _collect(runner: Runner, arms):
@@ -106,7 +106,7 @@ def _collect(runner: Runner, arms):
     except (IsolationError, ContaminationError) as e:
         typer.secho(f"isolation failure, results would not be trustworthy:\n{e}",
                     fg=typer.colors.RED, err=True)
-        raise typer.Exit(65)
+        raise typer.Exit(65) from None
 
 
 def _data(cmp, a, b, trials, runner) -> dict:

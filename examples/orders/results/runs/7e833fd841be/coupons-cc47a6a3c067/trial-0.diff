@@ -1,0 +1,23 @@
+diff --git a/app/pricing.py b/app/pricing.py
+index ee5f36b..b62d49b 100644
+--- a/app/pricing.py
++++ b/app/pricing.py
+@@ -20,3 +20,18 @@ def subtotal(order: Order) -> Decimal:
+     total = sum((line_total(item) for item in order.items), Decimal("0"))
+     logger.debug("subtotal for %d items: %s", len(order.items), total)
+     return to_cents(total)
++
++
++def apply_coupon(order: Order, code: str) -> Decimal:
++    base = subtotal(order)
++
++    if code == "SAVE10":
++        discount = base * Decimal("0.10")
++    elif code == "FLAT5":
++        discount = Decimal("5")
++    else:
++        raise ValueError(f"Invalid coupon code: {code}")
++
++    result = base - discount
++    result = max(result, Decimal("0"))
++    return to_cents(result)

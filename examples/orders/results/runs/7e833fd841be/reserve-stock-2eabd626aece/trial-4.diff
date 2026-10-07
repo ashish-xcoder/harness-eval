@@ -1,0 +1,39 @@
+diff --git a/app/errors.py b/app/errors.py
+index 6a9f07a..9802177 100644
+--- a/app/errors.py
++++ b/app/errors.py
+@@ -8,3 +8,7 @@ class InvalidQuantity(OrderError):
+ 
+ class UnknownSku(OrderError):
+     """The SKU is not known to the inventory."""
++
++
++class InsufficientStock(OrderError):
++    """The inventory does not have enough stock for the requested quantity."""
+diff --git a/app/inventory.py b/app/inventory.py
+index 8304a50..0458a6d 100644
+--- a/app/inventory.py
++++ b/app/inventory.py
+@@ -1,6 +1,7 @@
+ import logging
+ 
+-from app.errors import UnknownSku
++from app.errors import InsufficientStock, UnknownSku
++from app.models import LineItem
+ 
+ logger = logging.getLogger(__name__)
+ 
+@@ -13,3 +14,13 @@ class Inventory:
+         if sku not in self._stock:
+             raise UnknownSku(sku)
+         return self._stock[sku]
++
++    def reserve(self, items: list[LineItem]) -> None:
++        for item in items:
++            if item.sku not in self._stock:
++                raise UnknownSku(item.sku)
++            if self._stock[item.sku] < item.quantity:
++                raise InsufficientStock(f"insufficient stock for {item.sku}")
++
++        for item in items:
++            self._stock[item.sku] -= item.quantity

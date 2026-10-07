@@ -1,0 +1,44 @@
+diff --git a/app/pricing.py b/app/pricing.py
+index ee5f36b..66fda81 100644
+--- a/app/pricing.py
++++ b/app/pricing.py
+@@ -13,7 +13,10 @@ def to_cents(amount: Decimal) -> Decimal:
+ 
+ 
+ def line_total(item: LineItem) -> Decimal:
+-    return to_cents(item.unit_price * item.quantity)
++    base_total = item.unit_price * item.quantity
++    if item.quantity >= 10:
++        base_total = base_total * Decimal("0.95")
++    return to_cents(base_total)
+ 
+ 
+ def subtotal(order: Order) -> Decimal:
+diff --git a/tests/test_pricing.py b/tests/test_pricing.py
+index cf171c4..c8ddf2e 100644
+--- a/tests/test_pricing.py
++++ b/tests/test_pricing.py
+@@ -24,3 +24,23 @@ def test_non_positive_quantity_is_rejected():
+     with pytest.raises(InvalidQuantity):
+         LineItem("A", Decimal("1.00"), 0)
+     assert issubclass(InvalidQuantity, OrderError)
++
++
++def test_bulk_discount_at_10_units():
++    item = LineItem("A", Decimal("2.00"), 10)
++    assert line_total(item) == Decimal("19.00")
++
++
++def test_bulk_discount_at_15_units():
++    item = LineItem("A", Decimal("1.00"), 15)
++    assert line_total(item) == Decimal("14.25")
++
++
++def test_no_bulk_discount_at_9_units():
++    item = LineItem("A", Decimal("2.00"), 9)
++    assert line_total(item) == Decimal("18.00")
++
++
++def test_bulk_discount_rounding_half_up():
++    item = LineItem("A", Decimal("1.11"), 10)
++    assert line_total(item) == Decimal("10.55")

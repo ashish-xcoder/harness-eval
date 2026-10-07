@@ -1,0 +1,43 @@
+diff --git a/app/errors.py b/app/errors.py
+index 6a9f07a..6ec3054 100644
+--- a/app/errors.py
++++ b/app/errors.py
+@@ -8,3 +8,7 @@ class InvalidQuantity(OrderError):
+ 
+ class UnknownSku(OrderError):
+     """The SKU is not known to the inventory."""
++
++
++class InvalidCoupon(OrderError):
++    """The coupon code is not recognized."""
+diff --git a/app/pricing.py b/app/pricing.py
+index ee5f36b..0d7bcaa 100644
+--- a/app/pricing.py
++++ b/app/pricing.py
+@@ -1,6 +1,7 @@
+ import logging
+ from decimal import ROUND_HALF_UP, Decimal
+ 
++from app.errors import InvalidCoupon
+ from app.models import LineItem, Order
+ 
+ logger = logging.getLogger(__name__)
+@@ -20,3 +21,18 @@ def subtotal(order: Order) -> Decimal:
+     total = sum((line_total(item) for item in order.items), Decimal("0"))
+     logger.debug("subtotal for %d items: %s", len(order.items), total)
+     return to_cents(total)
++
++
++def apply_coupon(order: Order, code: str) -> Decimal:
++    order_subtotal = subtotal(order)
++
++    if code == "SAVE10":
++        discount = order_subtotal * Decimal("0.10")
++    elif code == "FLAT5":
++        discount = Decimal("5.00")
++    else:
++        raise InvalidCoupon(f"coupon code '{code}' is not recognized")
++
++    result = order_subtotal - discount
++    result = max(result, Decimal("0.00"))
++    return to_cents(result)

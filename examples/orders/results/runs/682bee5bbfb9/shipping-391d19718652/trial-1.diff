@@ -1,0 +1,20 @@
+diff --git a/app/pricing.py b/app/pricing.py
+index ee5f36b..d464dce 100644
+--- a/app/pricing.py
++++ b/app/pricing.py
+@@ -20,3 +20,15 @@ def subtotal(order: Order) -> Decimal:
+     total = sum((line_total(item) for item in order.items), Decimal("0"))
+     logger.debug("subtotal for %d items: %s", len(order.items), total)
+     return to_cents(total)
++
++
++def shipping_cost(order: Order, express: bool = False) -> Decimal:
++    order_subtotal = subtotal(order)
++    if order_subtotal >= Decimal("50.00"):
++        base_cost = Decimal("0.00")
++    else:
++        base_cost = Decimal("5.99")
++
++    if express:
++        return to_cents(base_cost + Decimal("10.00"))
++    return base_cost

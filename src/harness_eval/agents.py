@@ -11,6 +11,7 @@ agent produced the code.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import signal
 import subprocess
@@ -127,8 +128,14 @@ def _crewai(harness: Harness, task: Task, ws: Path, home: Path, log: Path) -> Ag
         "--model", harness.model or "ollama/qwen2.5:7b",
         "--workspace", str(ws), "--max-iter", str(harness.max_turns),
     ]
+    env = agent_env(home)
+    # CrewAI resolves its storage dir via appdirs -> SHGetFolderPath, which fails under a
+    # private USERPROFILE with no AppData; give it private AppData dirs too.
+    for var, sub in (("APPDATA", "Roaming"), ("LOCALAPPDATA", "Local")):
+        (home / "AppData" / sub).mkdir(parents=True, exist_ok=True)
+        env[var] = str(home / "AppData" / sub)
     started = time.monotonic()
-    code, out, err = _run(cmd, task.prompt, ws, agent_env(home), harness.timeout_s, log)
+    code, out, err = _run(cmd, task.prompt, ws, env, harness.timeout_s, log)
     res = AgentResult(status="ok", duration_s=round(time.monotonic() - started, 1), cost_usd=0.0)
     summary = next((e for e in reversed(_jsonl(out)) if e.get("type") == "result"), None)
     if code == "timeout":
@@ -184,8 +191,6 @@ def _kill_tree(proc: subprocess.Popen) -> None:
     if sys.platform == "win32":
         subprocess.run(["taskkill", "/T", "/F", "/PID", str(proc.pid)], capture_output=True)
     else:
-        import os
-
         os.killpg(proc.pid, signal.SIGKILL)
 
 

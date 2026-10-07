@@ -1,0 +1,152 @@
+{
+  "verdict": "INCONCLUSIVE",
+  "exit_code": 2,
+  "reasons": [
+    "no metric moved beyond its confidence interval / noise floor"
+  ],
+  "baseline": {
+    "name": "baseline",
+    "hash": "7e833fd841be"
+  },
+  "candidate": {
+    "name": "candidate",
+    "hash": "682bee5bbfb9"
+  },
+  "trials": 6,
+  "spent_usd_this_invocation": 0.0,
+  "missing": [],
+  "metrics": [
+    {
+      "name": "works",
+      "label": "Works (existing tests pass)",
+      "higher_is_better": true,
+      "guardrail": true,
+      "mean_a": 1.0,
+      "mean_b": 1.0,
+      "delta": 0.0,
+      "ci": [
+        0.0,
+        0.0
+      ],
+      "noise_floor": 0.0,
+      "outcome": "no change",
+      "per_task": {
+        "bulk-discount": 0.0,
+        "coupons": 0.0,
+        "reserve-stock": 0.0,
+        "shipping": 0.0,
+        "tax": 0.0
+      }
+    },
+    {
+      "name": "intent",
+      "label": "Business intent (hidden acceptance tests)",
+      "higher_is_better": true,
+      "guardrail": true,
+      "mean_a": 1.0,
+      "mean_b": 0.9933333333333334,
+      "delta": -0.006666666666666665,
+      "ci": [
+        -0.026666666666666707,
+        0.0
+      ],
+      "noise_floor": 0.0,
+      "outcome": "no change",
+      "per_task": {
+        "bulk-discount": 0.0,
+        "coupons": -0.033333333333333326,
+        "reserve-stock": 0.0,
+        "shipping": 0.0,
+        "tax": 0.0
+      }
+    },
+    {
+      "name": "conventions",
+      "label": "Team conventions",
+      "higher_is_better": true,
+      "guardrail": false,
+      "mean_a": 0.8388888888888889,
+      "mean_b": 0.9,
+      "delta": 0.061111111111111095,
+      "ci": [
+        0.022222222222222233,
+        0.10555555555555556
+      ],
+      "noise_floor": 0.0666666666666667,
+      "outcome": "no change",
+      "per_task": {
+        "bulk-discount": 0.02777777777777779,
+        "coupons": 0.11111111111111105,
+        "reserve-stock": 0.02777777777777779,
+        "shipping": 0.05555555555555558,
+        "tax": 0.08333333333333326
+      }
+    },
+    {
+      "name": "cost_usd",
+      "label": "Cost per task (USD)",
+      "higher_is_better": false,
+      "guardrail": false,
+      "mean_a": 0.08298855666666667,
+      "mean_b": 0.09322978,
+      "delta": 0.010241223333333332,
+      "ci": [
+        -0.0008578466666666701,
+        0.020772836666666666
+      ],
+      "noise_floor": 0.021243693333333324,
+      "outcome": "no change",
+      "per_task": {
+        "bulk-discount": 0.006337783333333347,
+        "coupons": 0.008056416666666663,
+        "reserve-stock": -0.003704066666666672,
+        "shipping": 0.017715583333333326,
+        "tax": 0.0228004
+      }
+    },
+    {
+      "name": "tokens",
+      "label": "Tokens per task",
+      "higher_is_better": false,
+      "guardrail": false,
+      "mean_a": 248081.96666666667,
+      "mean_b": 305133.9666666667,
+      "delta": 57052.0,
+      "ci": [
+        -19891.233333333344,
+        124619.9
+      ],
+      "noise_floor": 116940.6,
+      "outcome": "no change",
+      "per_task": {
+        "bulk-discount": 85229.99999999997,
+        "coupons": 25256.5,
+        "reserve-stock": -60012.5,
+        "shipping": 106201.0,
+        "tax": 128585.0
+      }
+    },
+    {
+      "name": "duration_s",
+      "label": "Wall time per task (s)",
+      "higher_is_better": false,
+      "guardrail": false,
+      "mean_a": 31.253333333333334,
+      "mean_b": 35.519999999999996,
+      "delta": 4.2666666666666675,
+      "ci": [
+        -1.4500000000000015,
+        9.66
+      ],
+      "noise_floor": 14.313333333333333,
+      "outcome": "no change",
+      "per_task": {
+        "bulk-discount": 5.600000000000001,
+        "coupons": 3.4833333333333414,
+        "reserve-stock": -3.3500000000000014,
+        "shipping": 4.366666666666664,
+        "tax": 11.233333333333334
+      }
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "suite": "orders-service",
+  "harness": "candidate",
+  "harness_hash": "682bee5bbfb9",
+  "agent_kind": "claude",
+  "model": "haiku",
+  "task": "reserve-stock",
+  "task_hash": "2eabd626aece",
+  "trial": 2,
+  "status": "ok",
+  "agent": {
+    "status": "ok",
+    "duration_s": 49.6,
+    "cost_usd": 0.105822,
+    "input_tokens": 327231,
+    "output_tokens": 4131,
+    "turns": 12,
+    "message": "Perfect! I've successfully added the `Inventory.reserve(items)` method. Here's what was implemented:\n\n**Changes made:**\n\n1. **Added `InsufficientStock` error** in `app/errors.py` \u2014 a new error subclass for when stock is insufficient\n\n2. **Implemented `reserve` method** in `app/inventory.py` with:\n   - Type hints: `reserve(self, items: list[LineItem]) -> None`\n   - **All-or-nothing semantics**: First validates all SKUs exist, then checks sufficient stock for all items combined, then decrements stock\n   - Raises `UnknownSku` if any SKU is unknown\n   - Raises `InsufficientStock` if any SKU has insufficient stock\n   - Correctly handles multiple items with the same SKU by aggregating quantities\n\n3. **Added comprehensive tests** covering:\n   - Successful reservation\n   - Unknown SKU (verifies no stock changes)\n   - Insufficient stock (verifies no stock changes)\n   - Multiple items of the same SKU\n\nAll 11 tests pass. The implementation follows team conventions with proper type hints, custom error classes, and transactional all-or-nothing behavior.",
+    "error": "",
+    "loaded": {
+      "model": "claude-haiku-4-5-20251001",
+      "mcp_servers": [],
+      "plugins": [],
+      "skills": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator"
+      ],
+      "slash_commands": [
+        "deep-research",
+        "design-sync",
+        "update-config",
+        "verify",
+        "debug",
+        "code-review",
+        "simplify",
+        "batch",
+        "fewer-permission-prompts",
+        "loop",
+        "schedule",
+        "claude-api",
+        "run",
+        "run-skill-generator",
+        "clear",
+        "compact",
+        "config",
+        "context",
+        "heapdump",
+        "init",
+        "reload-skills",
+        "review",
+        "security-review",
+        "usage",
+        "insights",
+        "goal",
+        "team-onboarding"
+      ]
+    }
+  },
+  "scores": {
+    "works": 1.0,
+    "works_detail": {
+      "passed": 6,
+      "total": 6,
+      "failed": [],
+      "output": "......                                                                   [100%]\n6 passed in 0.06s\n"
+    },
+    "intent": 1.0,
+    "intent_detail": {
+      "passed": 4,
+      "total": 4,
+      "failed": [],
+      "output": "....                                                                     [100%]\n4 passed in 0.06s\n"
+    },
+    "conventions": 1.0,
+    "violations": [],
+    "tampered": [],
+    "tests_added": [
+      "tests/test_inventory.py"
+    ],
+    "files_changed": {
+      "app/errors.py": "M",
+      "app/inventory.py": "M",
+      "tests/test_inventory.py": "M"
+    }
+  },
+  "created": "2026-10-07T13:24:42+00:00"
+}
